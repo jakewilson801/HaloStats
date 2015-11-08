@@ -7,7 +7,16 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import me.jakewilson.halostats.dummy.DummyContent;
+import java.util.ArrayList;
+
+
+import me.jakewilson.halostats.net.HaloAPI;
+import me.jakewilson.halostats.net.Match;
+import me.jakewilson.halostats.net.MatchResponse;
+import retrofit.Callback;
+import retrofit.GsonConverterFactory;
+import retrofit.Response;
+import retrofit.Retrofit;
 
 /**
  * A list fragment representing a list of Matches. This fragment
@@ -66,16 +75,39 @@ public class MatchListFragment extends ListFragment {
     public MatchListFragment() {
     }
 
+    public ArrayList<Match> mMatches;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(HaloAPI.apiHost)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        retrofit.create(HaloAPI.class).getMatches("JakeWilson801").enqueue(new Callback<MatchResponse>() {
+            @Override
+            public void onResponse(Response<MatchResponse> response, Retrofit retrofit) {
+                mMatches = response.body().Results;
+                setListAdapter(new ArrayAdapter<>(
+                        getActivity(),
+                        android.R.layout.simple_list_item_activated_1,
+                        android.R.id.text1,
+                        mMatches));
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+
+            }
+        });
+
+
+
         // TODO: replace with a real list adapter.
-        setListAdapter(new ArrayAdapter<DummyContent.DummyItem>(
-                getActivity(),
-                android.R.layout.simple_list_item_activated_1,
-                android.R.id.text1,
-                DummyContent.ITEMS));
+
     }
 
     @Override
@@ -115,7 +147,7 @@ public class MatchListFragment extends ListFragment {
 
         // Notify the active callbacks interface (the activity, if the
         // fragment is attached to one) that an item has been selected.
-        mCallbacks.onItemSelected(DummyContent.ITEMS.get(position).id);
+        mCallbacks.onItemSelected(mMatches.get(position).Id.MatchId);
     }
 
     @Override

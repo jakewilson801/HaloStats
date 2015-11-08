@@ -6,3 +6,4 @@
 /build
 /captures
 app.iml
+app/src/main/java/me/jakewilson/halostats/net/APIConfig.java
