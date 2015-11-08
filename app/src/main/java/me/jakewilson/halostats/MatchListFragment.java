@@ -55,7 +55,7 @@ public class MatchListFragment extends ListFragment {
         /**
          * Callback for when an item has been selected.
          */
-        public void onItemSelected(String id);
+        void onItemSelected(String id);
     }
 
     /**
@@ -76,6 +76,7 @@ public class MatchListFragment extends ListFragment {
     }
 
     public ArrayList<Match> mMatches;
+    public ArrayList<String> mMatchesLabel;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -91,11 +92,19 @@ public class MatchListFragment extends ListFragment {
             @Override
             public void onResponse(Response<MatchResponse> response, Retrofit retrofit) {
                 mMatches = response.body().Results;
-                setListAdapter(new ArrayAdapter<>(
+                mMatchesLabel = new ArrayList<>(mMatches.size());
+                for(Match m: mMatches){
+                    Match.Player p = m.Players.get(0);
+                    String label = String.format("K/D %s%s",
+                            p.TotalKills - p.TotalDeaths > 0 ? "+": "-",
+                            Math.abs(p.TotalKills - p.TotalDeaths));
+                    mMatchesLabel.add(new String(label));
+                }
+                setListAdapter(new ArrayAdapter<String>(
                         getActivity(),
                         android.R.layout.simple_list_item_activated_1,
                         android.R.id.text1,
-                        mMatches));
+                        mMatchesLabel));
             }
 
             @Override

@@ -15,4 +15,8 @@ public interface HaloAPI {
     @Headers(APIConfig.subscriptinHeader)
     @GET("stats/h5/players/{player}/matches")
     Call<MatchResponse> getMatches(@Path("player") String gamerTag);
+
+    @Headers(APIConfig.subscriptinHeader)
+    @GET("stats/h5/arena/matches/{matchId}")
+    Call<CaranageReportResponse> getCaranageReport(@Path("matchId") String matchId);
 }
